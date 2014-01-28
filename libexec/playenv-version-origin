@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Summary: Explain how the current Play Framework version is set
+
+set -e
+test -n "${PLAYENV_DEBUG}" && set -x
+
+if [ -n "${PLAYENV_VERSION}" ]; then
+  echo "PLAYENV_VERSION environment variable"
+else
+  playenv-version-file
+fi
+

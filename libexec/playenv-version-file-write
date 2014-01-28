@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Usage: playenv version-file-write <file> <version>
+
+set -e
+test -n "${PLAYENV_DEBUG}" && set -x
+
+PLAYENV_VERSION_FILE="${1}"
+PLAYENV_VERSION="${2}"
+
+if [ -z "${PLAYENV_VERSION}" ] || [ -z "${PLAYENV_VERSION_FILE}" ]; then
+  playenv-help --usage version-file-write >& 2
+  exit 1
+fi
+
+# Make sure the specified version is installed.
+playenv-prefix "${PLAYENV_VERSION}" > /dev/null
+
+# Write the version out to disk.
+echo "${PLAYENV_VERSION}" > "${PLAYENV_VERSION_FILE}"
+

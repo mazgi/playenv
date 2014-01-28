@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+#
+# Summary: Set or show the local application-specific Play Framework
+# version
+#
+# Usage: playenv local <version>
+#        playenv local --unset
+#
+# Sets the local application-specific Play Framework version by writing
+# the version name to a file named `.play-version`.
+
+set -e
+test -n "${PLAYENV_DEBUG}" && set -x
+
+# Provide playenv completions
+if [ "${1}" = "--complete" ]; then
+  echo --unset
+  echo system
+  exec playenv-versions --bare
+fi
+
+PLAYENV_VERSION="${1}"
+
+if [ "${PLAYENV_VERSION}" = "--unset" ]; then
+  rm -f .play-version
+elif [ -n "${PLAYENV_VERSION}" ]; then
+  previous_file="$(PLAYENV_VERSION= playenv-version-origin || true)"
+  playenv-version-file-write .play-version "${PLAYENV_VERSION}"
+  if [ "${previous_file}" -ef .playenv-version ]; then
+    rm -f .playenv-version
+    { echo "playenv: removed existing \`.playenv-version\` file and migrated"
+      echo "    local version specification to \`.play-version\` file"
+    } >& 2
+  fi
+else
+  playenv-version-file-read .play-version ||
+    playenv-version-file-read .playenv-version ||
+    { echo "playenv: no local version configured for this directory"
+      exit 1
+    } >& 2
+fi
+

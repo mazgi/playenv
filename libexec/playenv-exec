@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+#
+# Summary: Run on executable with the selected Play Framework version
+#
+# Usage: playenv exec <command> [args ...]
+#
+# Runs on executable by first preparing PATH so that the selected Play
+# Framework version's `bin` directory is at the front.
+
+set -e
+test -n "${PLAYENV_DEBUG}" && set -x
+
+# Provide playenv completions
+if [ "${1}" = "--complete" ]; then
+  exec playenv shims --short
+fi
+
+PLAYENV_VERSION="$(playenv-version-name)"
+PLAYENV_COMMAND="${1}"
+
+if [ -z "${PLAYENV_COMMAND}" ]; then
+  playenv-help --usage exec >& 2
+  exit 1
+fi
+
+export PLAYENV_VERSION
+PLAYENV_COMMAND_PATH="$(playenv-which "${PLAYENV_COMMAND}")"
+PLAYENV_BIN_PATH="${PLAYENV_COMMAND_PATH%/*}"
+
+OLDIFS="${IFS}"
+IFS=$'\n' scripts=(`playenv-hooks exec`)
+IFS="${OLDIFS}"
+for script in "${scripts[@]}"; do
+  source "${script}"
+done
+
+shift 1
+if [ "${PLAYENV_VERSION}" != "system" ]; then
+  export PATH="${PLAYENV_BIN_PATH}:${PATH}"
+fi
+exec -a "${PLAYENV_COMMAND}" "${PLAYENV_COMMAND_PATH}" "${@}"
+

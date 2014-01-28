@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Summary: List all Play Framework versions available to playenv
+# Usage: playenv versions [--bare]
+#
+# Lists all Play Framework versions found in `${PLAYENV_ROOT}/versions/*`.
+
+set -e
+test -n "${PLAYENV_DEBUG}" && set -x
+
+if [ "${1}" = "--bare" ]; then
+  hit_prefix=""
+  miss_prefix=""
+  current_version=""
+  include_system=""
+else
+  hit_prefix="* "
+  miss_prefix="  "
+  current_version="$(playenv-version-name || true)"
+  include_system="1"
+fi
+
+print_version() {
+  if [ "${1}" = "${current_version}" ]; then
+    echo "${hit_prefix}$(playenv-version 2> /dev/null)"
+  else
+    echo "${hit_prefix}${1}"
+  fi
+}
+
+# Include "system" in the non-bare output, if it exists
+if [ -n "${include_system}" ] && PLAYENV_VERSION=system playenv-which play > /dev/null 2>&1; then
+  print_version system
+fi
+
+for path in "${PLAYENV_ROOT}/versions/"*; do
+  if [ -d "${path}" ]; then
+    print_version "${path##*/}"
+  fi
+done
+

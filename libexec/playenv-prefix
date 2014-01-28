@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Summary: Display prefix for a Play Framework version
+# Usage: playenv prefix [<version>]
+#
+# Displays the directory where a Play Framework version is installed.
+# If no version is given, `playenv prefix` displays the location of the
+# currently selected version.
+
+set -e
+test -n "${PLAYENV_DEBUG}" && set -x
+
+# Provide playenv completions
+if [ "${1}" = "--complete" ]; then
+  echo system
+  exec playenv-versions --bare
+fi
+
+if [ -n "${1}" ]; then
+  export PLAYENV_VERSION="${1}"
+elif [ -z "${PLAYENV_VERSION}" ]; then
+  PLAYENV_VERSION="$(playenv-version-name)"
+fi
+
+if [ "${PLAYENV_VERSION}" = "system" ]; then
+  if PLAY_PATH="$(playenv-which play 2> /dev/null)"; then
+    PLAY_PATH="${PLAY_PATH%/*}"
+    echo "${PLAY_PATH%/bin}"
+    exit
+  else
+    echo "playenv: system version not found in PATH" >& 2
+    exit 1
+  fi
+fi
+
+PLAYENV_PREFIX_PATH="${PLAYENV_ROOT}/versions/${PLAYENV_VERSION}"
+if [ ! -d "${PLAYENV_PREFIX_PATH}" ]; then
+  echo "playenv: version \`${PLAYENV_VERSION}\` not installed" >& 2
+  exit 1
+fi
+
+echo "${PLAYENV_PREFIX_PATH}"
+

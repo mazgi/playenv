@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# Summary: Display the full path to an executable
+# Usage: playenv which <command>
+#
+# Displays the full path to the executable that playenv will invoke when
+# you run the given command.
+
+set -e
+test -n "${PLAYENV_DEBUG}" && set -x
+
+# Provide playenv completions
+if [ "${1}" = "--complete" ]; then
+  exec playenv shims --short
+fi
+
+expand_path() {
+  if [ ! -d "${1}" ]; then
+    return 1
+  fi
+
+  local cwd="$(pwd)"
+  cd "${1}"
+  pwd
+  cd "${cwd}"
+}
+
+remove_from_path() {
+  local path_to_remove="$(expand_path "${1}")"
+  local result=""
+
+  if [ -z "${path_to_remove}" ]; then
+    echo "${PATH}"
+    return
+  fi
+
+  local paths
+  IFS=: paths=(${PATH})
+
+  for path in "${paths[@]}"; do
+    path="$(expand_path "${path}" || true)"
+    if [ -n "${path}" ] && [ "${path}" != "${path_to_remove}" ]; then
+      result="${result}${path}:"
+    fi
+  done
+
+  echo "${result%:}"
+}
+
+PLAYENV_VERSION="$(playenv-version-name)"
+PLAYENV_COMMAND="${1}"
+
+if [ -z "${PLAYENV_COMMAND}" ]; then
+  playenv-help --usage which >& 2
+  exit 1
+fi
+
+if [ "${PLAYENV_VERSION}" = "system" ]; then
+  PATH="$(remove_from_path "${PLAYENV_ROOT}/shims")"
+  PLAYENV_COMMAND_PATH="$(command -v "${PLAYENV_COMMAND}" || true)"
+else
+  PLAYENV_COMMAND_PATH="${PLAYENV_ROOT}/versions/${PLAYENV_VERSION}/${PLAYENV_COMMAND}"
+fi
+
+OLDIFS="${IFS}"
+IFS=$'\n' scripts=(`playenv-hooks which`)
+IFS="${OLDIFS}"
+for script in "${scripts[@]}"; do
+  source "${script}"
+done
+
+if [ -x "${PLAYENV_COMMAND_PATH}" ]; then
+  echo "${PLAYENV_COMMAND_PATH}"
+else
+  echo "playenv: ${PLAYENV_COMMAND}: command not found" >& 2
+
+  versions="$(playenv-whence "${PLAYENV_COMMAND}" || true)"
+  if [ -n "${versions}" ]; then
+    { echo ""
+      echo "The \`${1}\` command exists in these Play Framework versions:"
+      echo "${versions}" | sed 's/^/  /g'
+      echo ""
+    } >& 2
+  fi
+
+  exit 127
+fi
+
