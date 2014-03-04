@@ -17,8 +17,7 @@ Groom your Play Framework environment.
     $ echo 'export PATH="${HOME}/.playenv/bin:${PATH}"' >> ~/.zshrc
     ~~~
 
-3. Add `playenv init` to your shell to enable shims.  
-   (You need autocompletion? Just a little longer...)
+3. Add `playenv init` to your shell to enable shims and **autocompletion**.  
 
     ~~~ sh
     $ echo 'eval "$(playenv init -)"' >> ~/.zshrc
@@ -34,7 +33,7 @@ Groom your Play Framework environment.
     #=> "playenv is a shell function"
     ~~~
 
-    _Same as in previous step, use `~/.bash_profile` for Bash._
+    *Same as in previous step, use `~/.bash_profile` for Bash.*
 
 5. Download sbt archive and extract into `~/.playenv/versions/`.
 
@@ -43,11 +42,15 @@ Groom your Play Framework environment.
     $ unzip play-2.2.1.zip -d ~/.playenv/versions/
     ~~~
 
-    _It is only way at present._
+    *It is only way at present.*
 
 ### Version History
 
+**0.0.2** (Mar 04, 2014)
+
+  * Added completions for `Z shell` and `Bash`.
+
 **0.0.1** (Jan 30, 2014)
 
-* Initial public release.
+  * Initial public release.
 
