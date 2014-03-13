@@ -1,6 +1,8 @@
 playenv
 =======
 
+[![Build Status](https://travis-ci.org/mazgi/playenv.png?branch=master)](https://travis-ci.org/mazgi/playenv)
+
 Groom your Play Framework environment.
 
 ### Installation
@@ -45,6 +47,12 @@ Groom your Play Framework environment.
     *It is only way at present.*
 
 ### Version History
+
+**0.0.3** (Mar 14, 2014)
+
+  * Added [Travis CI](https://travis-ci.org) status badge on README.
+  * Fixed a bug when run `rehash` subcommand.
+  * Fixed version string.
 
 **0.0.2** (Mar 04, 2014)
 
