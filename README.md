@@ -1,6 +1,8 @@
 playenv
 =======
 
+[![Build Status](https://travis-ci.org/mazgi/playenv.png?branch=master)](https://travis-ci.org/mazgi/playenv)
+
 Groom your Play Framework environment.
 
 ### Installation
