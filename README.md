@@ -63,6 +63,10 @@ Groom your Play Framework environment.
 
 ### Version History
 
+**0.0.4** (Mar 17, 2014)
+
+  * Improved installation instruction by *play-install* built-in plugin.
+
 **0.0.3** (Mar 14, 2014)
 
   * Added [Travis CI](https://travis-ci.org) status badge on README.
