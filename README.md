@@ -5,6 +5,9 @@ playenv
 
 Groom your Play Framework environment.
 
+Do you need [**sbt**](http://www.scala-sbt.org) and [**Scala**](http://www.scala-lang.org) version management?
+Please refer to [**sbtenv**](https://github.com/mazgi/sbtenv) in the case of use **sbt**, and [**scalaenv**](https://github.com/mazgi/scalaenv) in the case of use **Scala**.
+
 ### Installation
 
 1. `git clone` playenv into `~/.playenv`.
